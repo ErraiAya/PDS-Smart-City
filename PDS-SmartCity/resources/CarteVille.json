@@ -1,0 +1,13 @@
+[
+	{
+		"libelle": "Rabat",
+		"shape": "square",
+		"length": 700.0,
+		"width": 400.0,
+		"nb_points": 25,
+		"cost": 300.0
+	}
+	
+] 
+  
+    
