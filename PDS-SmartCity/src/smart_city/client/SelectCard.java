@@ -9,7 +9,7 @@ import org.json.simple.JSONObject;
 
 public class SelectCard {
 
-	private SocketClient client = new SocketClient();
+	private SocketClient client;
 	private ArrayList<JSONObject> reponseServ;
 	public SelectCard() throws IOException, JSONException {
 		JSONObject obj = new JSONObject();

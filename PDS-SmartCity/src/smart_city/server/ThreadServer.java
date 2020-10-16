@@ -149,6 +149,35 @@ public class ThreadServer extends Thread {
 				System.out.println(obj);
 				return obj;
 			}
+
+
+			if (JsonRecu.get("demandType").equals("DELETE_CARD")) {
+				System.out.println("Je suis rentre dans la requete DELETE");
+				// recovery of data that the client had completed (name / first name
+
+				
+
+				Long idd = (Long) JsonRecu.get("id");
+				int id = idd.intValue(); 
+				
+				PreparedStatement stmt3 = c.prepareStatement(
+						"delete from CarteVille where id = ?");
+				// the request takes name and first name already retrieved
+				stmt3.setInt(1, id);
+				// query execution
+				JSONObject obj = new JSONObject();
+				// if (insertion bien pass?) => executer les lignes suivantes sinon dire erreur
+				if (stmt3.executeUpdate() >= 1) {
+					obj.put("reponse", String.valueOf("Suppression reussi"));
+					writeJsonFile(obj);
+				} else {
+					obj.put("reponse", String.valueOf("erreur lors de l'insertion"));
+				}
+				System.out.println(obj);
+				return obj;
+			}
+
+			
 			
 		} catch (Exception e) {
 			e.printStackTrace();
