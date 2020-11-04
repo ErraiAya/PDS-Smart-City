@@ -470,6 +470,10 @@ public class CardView {
 		model.addRow(new Object[] { reponse.get("libelle"), reponse.get("shape"), reponse.get("length"),
 				reponse.get("width"), reponse.get("nb_points"), reponse.get("cost") });
 
+	    btnSave.setVisible(false);
+		btnCancel.setVisible(false);
+		enables(true);
+		
 	}// GEN-LAST:event_jBtnSaveActionPerformed
 
 	
@@ -623,6 +627,7 @@ public class CardView {
 		g2d.setFont(new Font("TimesRoman", Font.PLAIN, 20));
 		g2d.drawString("Cost of station: 100€", 0, -5);
 
+		
 	}
 
 	public void enables(Boolean enabled) {

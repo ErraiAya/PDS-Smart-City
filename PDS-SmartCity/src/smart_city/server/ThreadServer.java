@@ -76,6 +76,37 @@ public class ThreadServer extends Thread {
 	private JSONObject crud(JSONObject JsonRecu) {
 
 		try {
+			if (JsonRecu.get("demandType").equals("SELECT_CITY")) {
+				// going to do a search using "upper"
+				String libelle = ((String) JsonRecu.get("libelle")).toUpperCase();
+				
+				PreparedStatement ps = c.prepareStatement("SELECT  libelle, shape,length,width,nb_points, cost FROM CarteVille WHERE UPPER(libelle) LIKE ?");
+				ps.setString(1, "%" + libelle + "%");
+
+				ResultSet rs2 = ps.executeQuery();
+
+				JSONObject obj = new JSONObject();
+				ArrayList<JSONObject> city = new ArrayList<JSONObject>();
+
+				while (rs2.next()) {
+					JSONObject carteville = new JSONObject();
+
+					carteville.put("libelle", rs2.getString("libelle"));
+					carteville.put("shape", rs2.getString("shape"));
+					carteville.put("length", rs2.getString("length"));
+					carteville.put("width", rs2.getString("width"));
+					carteville.put("nb_points", rs2.getString("nb_points"));
+					carteville.put("cost", rs2.getString("cost"));
+					city.add(carteville);
+				}
+				obj.put("city", city);
+				System.out.println("voici le json envoyé avec le select by city : ");
+				// displaying the Json
+				System.out.println(obj);
+
+				return obj;
+			}
+
 			if (JsonRecu.get("demandType").equals("SELECT_CARD")) {
 
 				PreparedStatement stmt1 = c.prepareStatement("select * from carteville");
