@@ -38,14 +38,17 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.awt.event.ActionEvent;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
-
 import org.json.JSONException;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
+
+import net.proteanit.sql.DbUtils;
 
 import javax.swing.ScrollPaneConstants;
 import java.awt.SystemColor;
@@ -64,9 +67,9 @@ public class CardView {
 	private JPanel PanelCard;
 	private JTextField textFieldSearch;
 	private JScrollPane scrollPane_1;
+	private JLabel lblNewLabel;
 	JViewport viewport;
-	private JTable table;
-	
+
 	int xscroll = 0;
 	int yscroll = 0;
 	String s = "";
@@ -91,7 +94,11 @@ public class CardView {
 	private final double AVERAGE_SPEED = 19.6; // (km/h)
 	private final double AVERAGE_CONSUMPTION = 120; // (kw/h)
 	private final double COST_STATION = 100; // (euro/station)
+	private JTable table;
+	private SocketClient client = new SocketClient();
 	private DefaultTableModel dtm1;
+	SelectCardByName selectCardByName;
+	String header[] = new String[] { "Name", "Shape", "Length", "Width", "Nb Stations", "Costs" };
 
 	/**
 	 * Create the application.
@@ -103,6 +110,115 @@ public class CardView {
 		btnCancel.setVisible(false);
 		btnSave.setVisible(false);
 		scrollPane_1.getViewport().addChangeListener(new ListenAdditionsScrolled());
+
+		textFieldSearch.getDocument().addDocumentListener(new DocumentListener() {
+			@Override
+			public void insertUpdate(DocumentEvent e) {
+				System.out.println("insertUpdate");
+
+				String ville = textFieldSearch.getText();
+				try {
+					selectCardByName = new SelectCardByName(ville);
+					dtm1 = new DefaultTableModel(header, 0);
+					ArrayList<JSONObject> reponseServ = selectCardByName.getReponseServ();
+
+					Object[] temp = new Object[6];
+
+					for (int i = 0; i < reponseServ.size(); i++) {
+						temp[0] = reponseServ.get(i).get("libelle");
+						temp[1] = reponseServ.get(i).get("shape");
+						temp[2] = reponseServ.get(i).get("length");
+						temp[3] = reponseServ.get(i).get("width");
+						temp[4] = reponseServ.get(i).get("nb_points");
+						temp[5] = reponseServ.get(i).get("cost");
+
+						dtm1.addRow(temp);
+
+					}
+
+					table.setModel(dtm1);
+				} catch (JSONException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+
+				System.out.println("Vous avez recupere vos données stockées en base");
+			}
+
+			@Override
+			public void removeUpdate(DocumentEvent e) {
+				System.out.println("removeUpdate");
+				String ville = textFieldSearch.getText();
+				try {
+					selectCardByName = new SelectCardByName(ville);
+					dtm1 = new DefaultTableModel(header, 0);
+					ArrayList<JSONObject> reponseServ = selectCardByName.getReponseServ();
+
+					Object[] temp = new Object[6];
+
+					for (int i = 0; i < reponseServ.size(); i++) {
+						temp[0] = reponseServ.get(i).get("libelle");
+						temp[1] = reponseServ.get(i).get("shape");
+						temp[2] = reponseServ.get(i).get("length");
+						temp[3] = reponseServ.get(i).get("width");
+						temp[4] = reponseServ.get(i).get("nb_points");
+						temp[5] = reponseServ.get(i).get("cost");
+
+						dtm1.addRow(temp);
+
+					}
+
+					table.setModel(dtm1);
+				} catch (JSONException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+
+			}
+
+			@Override
+			public void changedUpdate(DocumentEvent e) {
+				System.out.println("changedUpdate");
+				String ville = textFieldSearch.getText();
+				try {
+					selectCardByName = new SelectCardByName(ville);
+					dtm1 = new DefaultTableModel(header, 0);
+					ArrayList<JSONObject> reponseServ = selectCardByName.getReponseServ();
+
+					Object[] temp = new Object[6];
+
+					for (int i = 0; i < reponseServ.size(); i++) {
+						temp[0] = reponseServ.get(i).get("libelle");
+						temp[1] = reponseServ.get(i).get("shape");
+						temp[2] = reponseServ.get(i).get("length");
+						temp[3] = reponseServ.get(i).get("width");
+						temp[4] = reponseServ.get(i).get("nb_points");
+						temp[5] = reponseServ.get(i).get("cost");
+
+						dtm1.addRow(temp);
+
+					}
+
+					table.setModel(dtm1);
+				} catch (JSONException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+
+				System.out.println("Vous avez choisi la ville que vous voulez recuperer");
+			}
+
+		});
+
 	}
 
 	/**
@@ -273,9 +389,9 @@ public class CardView {
 			}
 		});
 
-		JLabel lblNewLabel = new JLabel();
-		Image imgSensor = new ImageIcon(this.getClass().getResource("/mapss.png")).getImage();
-		Image newimgSensor = imgSensor.getScaledInstance(600, 400, java.awt.Image.SCALE_SMOOTH);
+		lblNewLabel = new JLabel();
+		Image imgSensor = new ImageIcon(this.getClass().getResource("/maps.jpg")).getImage();
+		Image newimgSensor = imgSensor.getScaledInstance(600, 840, java.awt.Image.SCALE_SMOOTH);
 		lblNewLabel.setIcon(new ImageIcon(newimgSensor));
 		PanelCard = new JPanel();
 		PanelCard.add(lblNewLabel);
@@ -312,10 +428,8 @@ public class CardView {
 
 	}
 
-	// METHOD TO FILL THE TABLE
 	private void fillTable() throws JSONException, IOException {
 		SelectCard selectCard = new SelectCard();
-		String header[] = new String[] { "Name", "Shape", "Length", "Width", "Nb Stations", "Costs" };
 		dtm1 = new DefaultTableModel(header, 0);
 		ArrayList<JSONObject> reponseServ = selectCard.getReponseServ();
 
@@ -334,25 +448,7 @@ public class CardView {
 		}
 
 	}
-
-	// Listener du statut du scrollPane pour reproduire le drawing dans chaque
-	// changement de position du scrollbar
-	public class ListenAdditionsScrolled implements ChangeListener {
-
-		@Override
-		public void stateChanged(ChangeEvent e) {
-			// firstRun est une valeur Boolean Ã  vÃ©rifier pour empÃ©cher d'Ã©xecuter les
-			// drawing lors de l'Ã©xecution du programme
-			if (firstRun != false) {
-				prepare();
-				drawing(s);
-			}
-
-		}
-
-	}
-
-	// Method Bouton Cancel Action
+	
 	private void btnCancelActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButton1ActionPerformed
 		btnSave.setVisible(false);
 		btnCancel.setVisible(false);
@@ -366,7 +462,7 @@ public class CardView {
 			drawing(s);
 		}
 	}// GEN-LAST:event_jScrollPane2ComponentResized
-		// Listener sur le comboBox pour changer la valeur de la longueur suite Ã  la
+		// Listener sur le comboBox pour changer la valeur de la longueur suite à la
 		// valeur de la hauteur dans le cas du "Square"
 
 	private void comboBoxShapeActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_comboBoxFormeActionPerformed
@@ -379,7 +475,6 @@ public class CardView {
 		}
 	}// GEN-LAST:event_comboBoxFormeActionPerformed
 
-	
 	private void tableRechMouseClicked(java.awt.event.MouseEvent evt) {// GEN-FIRST:event_tableRechMouseClicked
 		if (table.isEnabled() == true) {
 
@@ -396,19 +491,27 @@ public class CardView {
 				System.out.println("Vous avez recupere la largeur voulue");
 				point = Integer.parseInt(model.getValueAt(index, 4).toString());
 				System.out.println("Vous avez recupere le nombre de stations voulues");
+
 				firstRun = true;
 				prepare();
+
 				drawing(s);
 				PanelCard.setVisible(true);
+
 				System.out.println("it's working");
 
 			} catch (NumberFormatException exc) {
+				// JOptionPane.showMessageDialog(null, "You must enter valid parameters (number)
+				// to continue", "Warning : wrong parameter(s) type",
+				// JOptionPane.WARNING_MESSAGE);
+				// System.out.println("Vous devez saisir des entiers pour continuer");
 			}
 
 		}
 	}// GEN-LAST:event_tableRechMouseClicked
 
-	// Action bouton Validate
+	// Action du boutton Valider
+
 	private void btnNewButtonActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnNewButtonActionPerformed
 		s = (String) comboBoxShape.getItemAt(comboBoxShape.getSelectedIndex());
 		ville = textFieldName.getText();
@@ -425,12 +528,12 @@ public class CardView {
 				sLength = Double.parseDouble(textFieldLength.getText());
 				cost = Double.parseDouble(textFieldCost.getText());
 				point = (int) Math.round(cost / COST_STATION);
-				// Condition pour vÃ©rifier si les valeurs sont changÃ©es
+				// Condition pour vérifier si les valeurs sont changées
 				if ((sWidth != oldWidth || sLength != oldHeigth || point != oldPoint || !s.equals(oldShape))) {
 					if (sWidth < 0 || sLength < 0 || cost < 0) {
 						JOptionPane.showMessageDialog(null, "You must enter positive numbers",
 								"Warning : negatif numbers", JOptionPane.WARNING_MESSAGE);
-						System.out.println("Vous devez saisir des valeurs positives pour procÃ©der Ã  la validation");
+						System.out.println("Vous devez saisir des valeurs positives pour procéder à la validation");
 					} else {
 						firstRun = true;
 						prepare();
@@ -449,10 +552,14 @@ public class CardView {
 			}
 
 		}
-	}// GEN-LAST:event_btnNewButtonActionPerformed
-	
+	}
+
+	// GEN-LAST:event_btnNewButtonActionPerformed
+
 	private void jBtnSaveActionPerformed(java.awt.event.ActionEvent evt) throws JSONException, IOException {// GEN-FIRST:event_jButton1ActionPerformed
 		int station = (int) Math.round(Double.parseDouble(textFieldCost.getText()) / COST_STATION);
+		client.startConnection(AccessServer.getSERVER(), AccessServer.getPORT_SERVER());
+
 		JSONObject obj = new JSONObject();
 
 		obj.put("demandType", String.valueOf("INSERT_CARD"));
@@ -462,36 +569,42 @@ public class CardView {
 		obj.put("width", Double.valueOf(Double.parseDouble(textFieldWidth.getText())));
 		obj.put("nb_points", station);
 		obj.put("cost", Double.valueOf(Double.parseDouble(textFieldCost.getText())));
+
 		System.out.println(obj);
 		JSONObject reponse = new JSONObject();
 		reponse = SocketClient.sendMessage(obj);
 		System.out.println(reponse);
-		DefaultTableModel model = (DefaultTableModel) table.getModel();
-		model.addRow(new Object[] { reponse.get("libelle"), reponse.get("shape"), reponse.get("length"),
-				reponse.get("width"), reponse.get("nb_points"), reponse.get("cost") });
+		if (reponse.get("reponse").equals("Error")) {
+			JOptionPane.showMessageDialog(null, "Those informations already exist",
+					"Warning : Duplicate record", JOptionPane.WARNING_MESSAGE);
+			System.out.println("Vous devez saisir des valeurs");
+		} else {
+			btnSave.setVisible(false);
+			btnCancel.setVisible(false);
+			enables(true);
+			DefaultTableModel model = (DefaultTableModel) table.getModel();
+			model.addRow(new Object[] { reponse.get("libelle"), reponse.get("shape"), reponse.get("length"),
+					reponse.get("width"), reponse.get("nb_points"), reponse.get("cost") });
+		}
+		client.stopConnection();
 
-	    btnSave.setVisible(false);
-		btnCancel.setVisible(false);
-		enables(true);
-		
-	}// GEN-LAST:event_jBtnSaveActionPerformed
+	}// GEN-LAST:event_jButton1ActionPerformed
 
-	
 	public void prepare() {
 		// 350 500
 		graphics = PanelCard.getGraphics();
-		pWidth = PanelCard.getWidth();
-		pHeigth = PanelCard.getHeight();
+	
+		
 		viewport = scrollPane_1.getViewport();
 		xscroll = viewport.getViewPosition().x;
 		yscroll = viewport.getViewPosition().y;
 		graphics.clearRect(x - xscroll - 1, y - yscroll - 20, (int) Math.round(pWidth), (int) Math.round(pHeigth));
-		graphics.setColor(new Color(255, 255, 255));
+		//graphics.setColor(new Color(255, 255, 255));
 		graphics.fillRect(x - xscroll - 1, y - yscroll - 20, (int) Math.round(pWidth), (int) Math.round(pHeigth));
-		PanelCard.setPreferredSize(new Dimension((int) Math.round(sWidth) + 320, (int) Math.round(sLength) + 440));
 		scrollPane_1.setPreferredSize(new Dimension((int) Math.round(pWidth) + 320, (int) Math.round(sLength) + 440));
-		PanelCard.setVisible(true);
-
+		
+		PanelCard.setPreferredSize(new Dimension((int) Math.round(sWidth) + 320, (int) Math.round(sLength) + 440));
+		
 		draw((int) Math.round(sWidth), (int) Math.round(sLength));
 	}
 
@@ -500,7 +613,7 @@ public class CardView {
 
 		if (s.equals("Square") || s.equals("square")) {
 
-			graphics.setColor(Color.GREEN);
+			graphics.setColor(Color.BLUE);
 			graphics.drawRect(x, y, width, length);
 
 		} else if (s.equals("Rectangle") || s.equals("rectangle")) {
@@ -520,32 +633,6 @@ public class CardView {
 		oldPoint = point;
 		oldShape = s;
 
-	}
-
-	public double calculateDistanceBetweenPoints(int x1, int y1, int x2, int y2) {
-		return Math.sqrt((y2 - y1) * (y2 - y1) + (x2 - x1) * (x2 - x1));
-	}
-
-	public boolean notInList(int e, List<Integer> list) {
-		for (int i = 0; i < list.size(); i++) {
-			if (list.get(i) == e) {
-				return false;
-			}
-		}
-		return true;
-	}
-
-	public int getMinimumDistanceAbscissaIndex(int x, int y, List<Integer> listOfPoints, List<Integer> alreadyFlagged) {
-		int minIndex = 0;
-		double minDistance = Double.MAX_VALUE;
-		for (int i = 0; i < listOfPoints.size(); i += 2) {
-			if (calculateDistanceBetweenPoints(x, y, listOfPoints.get(i), listOfPoints.get(i + 1)) < minDistance
-					&& (listOfPoints.get(i) != x && listOfPoints.get(i + 1) != y) && notInList(i, alreadyFlagged)) {
-				minDistance = calculateDistanceBetweenPoints(x, y, listOfPoints.get(i), listOfPoints.get(i + 1));
-				minIndex = i;
-			}
-		}
-		return minIndex;
 	}
 
 	public void drawing(String s) {
@@ -622,12 +709,11 @@ public class CardView {
 		/*
 		 * double cost = ENERGY_PRICE * ((sumDistance * AVERAGE_CONSUMPTION) /
 		 * AVERAGE_SPEED); this.cost = cost; g2d.setFont(new Font("TimesRoman",
-		 * Font.PLAIN, 20)); g2d.drawString("Cost: " + (int) cost + "â‚¬", 0, -5);
+		 * Font.PLAIN, 20)); g2d.drawString("Cost: " + (int) cost + "€", 0, -5);
 		 */
 		g2d.setFont(new Font("TimesRoman", Font.PLAIN, 20));
-		g2d.drawString("Cost of station: 100€", 0, -5);
+		g2d.drawString("Cost of station : 100", 0, -5);
 
-		
 	}
 
 	public void enables(Boolean enabled) {
@@ -639,6 +725,51 @@ public class CardView {
 		textFieldSearch.setEnabled(enabled);
 		table.setEnabled(enabled);
 	}
+	
+	
+
+	public double calculateDistanceBetweenPoints(int x1, int y1, int x2, int y2) {
+		return Math.sqrt((y2 - y1) * (y2 - y1) + (x2 - x1) * (x2 - x1));
+	}
+
+	public boolean notInList(int e, List<Integer> list) {
+		for (int i = 0; i < list.size(); i++) {
+			if (list.get(i) == e) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	public int getMinimumDistanceAbscissaIndex(int x, int y, List<Integer> listOfPoints, List<Integer> alreadyFlagged) {
+		int minIndex = 0;
+		double minDistance = Double.MAX_VALUE;
+		for (int i = 0; i < listOfPoints.size(); i += 2) {
+			if (calculateDistanceBetweenPoints(x, y, listOfPoints.get(i), listOfPoints.get(i + 1)) < minDistance
+					&& (listOfPoints.get(i) != x && listOfPoints.get(i + 1) != y) && notInList(i, alreadyFlagged)) {
+				minDistance = calculateDistanceBetweenPoints(x, y, listOfPoints.get(i), listOfPoints.get(i + 1));
+				minIndex = i;
+			}
+		}
+		return minIndex;
+	}
+
+	// Listener du statut du scrollPane pour reproduire le drawing dans chaque
+	// changement de position du scrollbar
+	public class ListenAdditionsScrolled implements ChangeListener {
+
+		@Override
+		public void stateChanged(ChangeEvent e) {
+			// firstRun est une valeur Boolean à vérifier pour empécher d'éxecuter les
+			// drawing lors de l'éxecution du programme
+			if (firstRun != false) {
+				prepare();
+				drawing(s);
+			}
+
+		}
+
+	}
 
 	/**
 	 * Launch the application.
@@ -646,7 +777,6 @@ public class CardView {
 	 * @throws UnsupportedLookAndFeelException
 	 */
 	public static void main(String[] args) throws UnsupportedLookAndFeelException {
-
 		UIManager.setLookAndFeel(new NimbusLookAndFeel());
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {

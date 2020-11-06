@@ -7,6 +7,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 import java.sql.Timestamp;
 
 import org.json.JSONException;
@@ -15,6 +17,9 @@ import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+
+import net.proteanit.sql.DbUtils;
+import smart_city.connection_pool.DataSource;
 
 import java.io.*;
 import java.net.*;
@@ -45,7 +50,7 @@ public class ThreadServer extends Thread {
 				inJson = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 				String resp = inJson.readLine();
 				System.out.println("----bonjour je viens de récuperer le JSON");
-				System.out.println(resp);
+				//System.out.println(resp);
 				Object obj = JSONValue.parse(resp);
 				System.out.println("----bonjour je parse le JSON");
 				System.out.println(resp);
@@ -64,10 +69,18 @@ public class ThreadServer extends Thread {
 			} while (!clientSocket.isClosed());
 
 		} catch (Exception e) {
+			
+					try {
+						DataSource.releaseConnection(c);
+					} catch (SQLException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+			
 			System.out.println("--------Un client s'est déconnecté de manière précipitée !-------");
-			System.out.println(e.getMessage());
+			//System.out.println(e.getMessage());
 		}
-
+		
 		DBConnectController.clientsState(false);
 	}
 
@@ -103,7 +116,7 @@ public class ThreadServer extends Thread {
 				System.out.println("voici le json envoyé avec le select by city : ");
 				// displaying the Json
 				System.out.println(obj);
-
+				
 				return obj;
 			}
 
@@ -130,7 +143,7 @@ public class ThreadServer extends Thread {
 				}
 
 				obj.put("listCard", listCard);
-				System.out.println("voici le json envoyé avec le select All Card : ");
+				System.out.println("voici le json envoyÃ© avec le select All Card : ");
 				// displaying the Json
 				System.out.println(obj);
 
@@ -140,15 +153,26 @@ public class ThreadServer extends Thread {
 			if (JsonRecu.get("demandType").equals("INSERT_CARD")) {
 				System.out.println("Je suis rentre dans la requete INSERT");
 				// recovery of data that the client had completed (name / first name
+				
+				String name = ((String) JsonRecu.get("libelle")).toUpperCase();
+				
+				PreparedStatement ps = c.prepareStatement("SELECT  libelle, shape,length,width,nb_points, cost FROM CarteVille WHERE UPPER(libelle) LIKE ?");
+				ps.setString(1, "%" + name + "%");
+
+				ResultSet rs2 = ps.executeQuery();
+				JSONObject obj = new JSONObject();
+				if(rs2.next()) {
+				
+					obj.put("reponse", String.valueOf("Error"));
+				}else {
+				
 				String libelle = (String) JsonRecu.get("libelle");
 				String shape = (String) JsonRecu.get("shape");
-				System.out.println("1111");
 				Double length = (Double) JsonRecu.get("length");
 				Double width = (Double) JsonRecu.get("width");
 				
 				Long nb_points = (Long) JsonRecu.get("nb_points");
 				int nb_p = nb_points.intValue(); 
-				System.out.println("2222");
 				Double cost = (Double) JsonRecu.get("cost");
 				System.out.println("bonjour voici les donnees recu apres traitement");
 				System.out.println(libelle + " " + shape + " " + length + " " + width + " " + nb_points + " " + cost);
@@ -163,10 +187,10 @@ public class ThreadServer extends Thread {
 				stmt3.setInt(5, nb_p);
 				stmt3.setDouble(6, cost);
 				// query execution
-				JSONObject obj = new JSONObject();
+				
 				// if (insertion bien pass?) => executer les lignes suivantes sinon dire erreur
 				if (stmt3.executeUpdate() >= 1) {
-					obj.put("reponse", String.valueOf("insertion reussi"));
+					obj.put("reponse", String.valueOf("Success"));
 					obj.put("libelle", String.valueOf(libelle));
 					obj.put("shape", String.valueOf(shape));
 					obj.put("length", String.valueOf(length));
@@ -175,9 +199,11 @@ public class ThreadServer extends Thread {
 					obj.put("cost", String.valueOf(cost));
 					writeJsonFile(obj);
 				} else {
-					obj.put("reponse", String.valueOf("erreur lors de l'insertion"));
+					obj.put("reponse", String.valueOf("Error"));
 				}
 				System.out.println(obj);
+				
+				}
 				return obj;
 			}
 
@@ -185,9 +211,6 @@ public class ThreadServer extends Thread {
 			if (JsonRecu.get("demandType").equals("DELETE_CARD")) {
 				System.out.println("Je suis rentre dans la requete DELETE");
 				// recovery of data that the client had completed (name / first name
-
-				
-
 				Long idd = (Long) JsonRecu.get("id");
 				int id = idd.intValue(); 
 				
