@@ -11,10 +11,9 @@ public class SelectCard {
 
 	private SocketClient client;
 	private ArrayList<JSONObject> reponseServ;
-	public SelectCard() throws IOException, JSONException {
+	public SelectCard(SocketClient client) throws IOException, JSONException {
 		JSONObject obj = new JSONObject();
-		client = new SocketClient();
-		client.startConnection(AccessServer.getSERVER(), AccessServer.getPORT_SERVER());
+	
 		obj.put("demandType", String.valueOf("SELECT_CARD"));
 		
 		JSONObject reponse;
@@ -22,7 +21,6 @@ public class SelectCard {
 		reponse = SocketClient.sendMessage(obj);
 		System.out.println(reponse);
 		reponseServ = (ArrayList<JSONObject>) reponse.get("listCard");
-
 	}
 	
 	public ArrayList<JSONObject> getReponseServ() {
@@ -30,7 +28,9 @@ public class SelectCard {
 	}
 	
 	public static void main(String [] args) throws IOException, JSONException {
-		SelectCard s = new SelectCard();
+		SocketClient client = new SocketClient();
+		client.startConnection(AccessServer.getSERVER(), AccessServer.getPORT_SERVER());
+		SelectCard s = new SelectCard(client);
 		System.out.println(s.getReponseServ());
 	}
 

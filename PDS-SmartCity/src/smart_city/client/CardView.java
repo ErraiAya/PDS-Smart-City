@@ -106,6 +106,8 @@ public class CardView {
 	 * @throws IOException
 	 */
 	public CardView() throws IOException {
+		client.startConnection(AccessServer.getSERVER(), AccessServer.getPORT_SERVER());
+		
 		initialize();
 		btnCancel.setVisible(false);
 		btnSave.setVisible(false);
@@ -118,7 +120,7 @@ public class CardView {
 
 				String ville = textFieldSearch.getText();
 				try {
-					selectCardByName = new SelectCardByName(ville);
+					selectCardByName = new SelectCardByName(ville, client);
 					dtm1 = new DefaultTableModel(header, 0);
 					ArrayList<JSONObject> reponseServ = selectCardByName.getReponseServ();
 
@@ -145,7 +147,7 @@ public class CardView {
 					e1.printStackTrace();
 				}
 
-				System.out.println("Vous avez recupere vos données stockées en base");
+				System.out.println("Vous avez recupere vos donnÃ©es stockÃ©es en base");
 			}
 
 			@Override
@@ -153,7 +155,7 @@ public class CardView {
 				System.out.println("removeUpdate");
 				String ville = textFieldSearch.getText();
 				try {
-					selectCardByName = new SelectCardByName(ville);
+					selectCardByName = new SelectCardByName(ville, client);
 					dtm1 = new DefaultTableModel(header, 0);
 					ArrayList<JSONObject> reponseServ = selectCardByName.getReponseServ();
 
@@ -187,7 +189,7 @@ public class CardView {
 				System.out.println("changedUpdate");
 				String ville = textFieldSearch.getText();
 				try {
-					selectCardByName = new SelectCardByName(ville);
+					selectCardByName = new SelectCardByName(ville, client);
 					dtm1 = new DefaultTableModel(header, 0);
 					ArrayList<JSONObject> reponseServ = selectCardByName.getReponseServ();
 
@@ -429,7 +431,7 @@ public class CardView {
 	}
 
 	private void fillTable() throws JSONException, IOException {
-		SelectCard selectCard = new SelectCard();
+		SelectCard selectCard = new SelectCard(client);
 		dtm1 = new DefaultTableModel(header, 0);
 		ArrayList<JSONObject> reponseServ = selectCard.getReponseServ();
 
@@ -462,7 +464,7 @@ public class CardView {
 			drawing(s);
 		}
 	}// GEN-LAST:event_jScrollPane2ComponentResized
-		// Listener sur le comboBox pour changer la valeur de la longueur suite à la
+		// Listener sur le comboBox pour changer la valeur de la longueur suite Ã  la
 		// valeur de la hauteur dans le cas du "Square"
 
 	private void comboBoxShapeActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_comboBoxFormeActionPerformed
@@ -528,21 +530,22 @@ public class CardView {
 				sLength = Double.parseDouble(textFieldLength.getText());
 				cost = Double.parseDouble(textFieldCost.getText());
 				point = (int) Math.round(cost / COST_STATION);
-				// Condition pour vérifier si les valeurs sont changées
+				// Condition pour vÃ©rifier si les valeurs sont changÃ©es
 				if ((sWidth != oldWidth || sLength != oldHeigth || point != oldPoint || !s.equals(oldShape))) {
 					if (sWidth < 0 || sLength < 0 || cost < 0) {
 						JOptionPane.showMessageDialog(null, "You must enter positive numbers",
 								"Warning : negatif numbers", JOptionPane.WARNING_MESSAGE);
-						System.out.println("Vous devez saisir des valeurs positives pour procéder à la validation");
+						System.out.println("Vous devez saisir des valeurs positives pour procÃ©der Ã  la validation");
 					} else {
 						firstRun = true;
 						prepare();
 						drawing(s);
+						btnSave.setVisible(true);
+						btnCancel.setVisible(true);
+						enables(false);
 					}
 				}
-				btnSave.setVisible(true);
-				btnCancel.setVisible(true);
-				enables(false);
+				
 				PanelCard.setVisible(true);
 
 			} catch (NumberFormatException exc) {
@@ -558,8 +561,7 @@ public class CardView {
 
 	private void jBtnSaveActionPerformed(java.awt.event.ActionEvent evt) throws JSONException, IOException {// GEN-FIRST:event_jButton1ActionPerformed
 		int station = (int) Math.round(Double.parseDouble(textFieldCost.getText()) / COST_STATION);
-		client.startConnection(AccessServer.getSERVER(), AccessServer.getPORT_SERVER());
-
+		
 		JSONObject obj = new JSONObject();
 
 		obj.put("demandType", String.valueOf("INSERT_CARD"));
@@ -586,7 +588,6 @@ public class CardView {
 			model.addRow(new Object[] { reponse.get("libelle"), reponse.get("shape"), reponse.get("length"),
 					reponse.get("width"), reponse.get("nb_points"), reponse.get("cost") });
 		}
-		client.stopConnection();
 
 	}// GEN-LAST:event_jButton1ActionPerformed
 
@@ -709,10 +710,10 @@ public class CardView {
 		/*
 		 * double cost = ENERGY_PRICE * ((sumDistance * AVERAGE_CONSUMPTION) /
 		 * AVERAGE_SPEED); this.cost = cost; g2d.setFont(new Font("TimesRoman",
-		 * Font.PLAIN, 20)); g2d.drawString("Cost: " + (int) cost + "€", 0, -5);
+		 * Font.PLAIN, 20)); g2d.drawString("Cost: " + (int) cost + "â‚¬", 0, -5);
 		 */
 		g2d.setFont(new Font("TimesRoman", Font.PLAIN, 20));
-		g2d.drawString("Cost of station : 100", 0, -5);
+		g2d.drawString("Cost of station : 100€", 0, -5);
 
 	}
 
@@ -760,8 +761,8 @@ public class CardView {
 
 		@Override
 		public void stateChanged(ChangeEvent e) {
-			// firstRun est une valeur Boolean à vérifier pour empécher d'éxecuter les
-			// drawing lors de l'éxecution du programme
+			// firstRun est une valeur Boolean Ã  vÃ©rifier pour empÃ©cher d'Ã©xecuter les
+			// drawing lors de l'Ã©xecution du programme
 			if (firstRun != false) {
 				prepare();
 				drawing(s);

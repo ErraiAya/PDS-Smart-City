@@ -11,28 +11,28 @@ public class SelectCardByName {
 
 	private SocketClient client;
 	private ArrayList<JSONObject> reponseServ;
-	public SelectCardByName(String name) throws IOException, JSONException {
+
+	public SelectCardByName(String name, SocketClient client) throws IOException, JSONException {
 		JSONObject obj = new JSONObject();
-		client = new SocketClient();
-		client.startConnection(AccessServer.getSERVER(), AccessServer.getPORT_SERVER());
 		obj.put("demandType", String.valueOf("SELECT_CITY"));
 		obj.put("libelle", name);
 		JSONObject reponse;
-		
 		reponse = SocketClient.sendMessage(obj);
 		System.out.println(reponse);
 		reponseServ = (ArrayList<JSONObject>) reponse.get("city");
-		client.stopConnection();
 	}
-	
+
 	public ArrayList<JSONObject> getReponseServ() {
 		return this.reponseServ;
 	}
-	
-	public static void main(String [] args) throws IOException, JSONException {
+
+	public static void main(String[] args) throws IOException, JSONException {
 		Scanner sc = new Scanner(System.in);
 		String ville = sc.next();
-		SelectCardByName s = new SelectCardByName(ville);
+		SocketClient client = new SocketClient();
+		client.startConnection(AccessServer.getSERVER(), AccessServer.getPORT_SERVER());
+		System.out.println("Please enter the name :");
+		SelectCardByName s = new SelectCardByName(ville, client);
 		System.out.println(s.getReponseServ());
 	}
 

@@ -14,51 +14,49 @@ public class InsertCard {
 
 	private SocketClient client = new SocketClient();
 
-	public InsertCard() throws IOException, ParseException {
+	public InsertCard(SocketClient client) throws IOException, ParseException {
 
 		StringBuffer sb = new StringBuffer();
 
-		// lecture du JSON afin de mettre chaque ligne en chaîne de caractère
-		InputStream inputStream = getClass().getClassLoader().getResourceAsStream("CarteVille.json"); 
-		BufferedReader bufferedReader2 = new BufferedReader(new InputStreamReader(inputStream, "UTF-8")); 
+		// lecture du JSON afin de mettre chaque ligne en chaÃ®ne de caractÃ¨re
+		InputStream inputStream = getClass().getClassLoader().getResourceAsStream("CarteVille.json");
+		BufferedReader bufferedReader2 = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
 		try {
-			String temp; 
-			while ((temp = bufferedReader2.readLine()) != null) 
-				sb.append(temp); 
+			String temp;
+			while ((temp = bufferedReader2.readLine()) != null)
+				sb.append(temp);
 		} catch (IOException e) {
 			e.printStackTrace();
 		} finally {
 			try {
 				bufferedReader2.close();
 			} catch (IOException e) {
-				e.printStackTrace(); 
+				e.printStackTrace();
 			}
 		}
-		String myjsonstring = sb.toString(); 
-		JSONParser parser = new JSONParser(); 
-		JSONArray json = (JSONArray) parser.parse(myjsonstring); 
+		String myjsonstring = sb.toString();
+		JSONParser parser = new JSONParser();
+		JSONArray json = (JSONArray) parser.parse(myjsonstring);
 		JSONObject jsonObject = (JSONObject) json.get(0);
-	
-		client = new SocketClient();
-		client.startConnection(AccessServer.getSERVER(), AccessServer.getPORT_SERVER());
-		
+
 		JSONObject obj = new JSONObject();
-		obj.put("demandType",String.valueOf("INSERT_CARD")); 
-		obj.put("libelle",jsonObject.get("libelle")); 
-		obj.put("shape",jsonObject.get("shape")); 
-		obj.put("length",jsonObject.get("length")); 
-		obj.put("width",jsonObject.get("width")); 
-		obj.put("nb_points",jsonObject.get("nb_points")); 
-		obj.put("cost",jsonObject.get("cost")); 
+		obj.put("demandType", String.valueOf("INSERT_CARD"));
+		obj.put("libelle", jsonObject.get("libelle"));
+		obj.put("shape", jsonObject.get("shape"));
+		obj.put("length", jsonObject.get("length"));
+		obj.put("width", jsonObject.get("width"));
+		obj.put("nb_points", jsonObject.get("nb_points"));
+		obj.put("cost", jsonObject.get("cost"));
 		System.out.println(obj);
-		JSONObject reponse= new JSONObject();
+		JSONObject reponse = new JSONObject();
 		reponse = SocketClient.sendMessage(obj);
 		System.out.println(reponse);
 
-
 	}
 
-	public static void main(String[] args) throws IOException, ParseException  {
-		InsertCard insertCard = new InsertCard();	
+	public static void main(String[] args) throws IOException, ParseException {
+		SocketClient client = new SocketClient();
+		client.startConnection(AccessServer.getSERVER(), AccessServer.getPORT_SERVER());
+		InsertCard insertCard = new InsertCard(client);
 	}
 }

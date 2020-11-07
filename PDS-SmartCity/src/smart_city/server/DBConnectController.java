@@ -55,9 +55,10 @@ public class DBConnectController extends Thread {
 			try {
 				// Waiting for customer connection
 				socketClient = socketServeur.accept();
-				DBConnectController.clientsState(true);
+				
 				// a connection is assigned to the client
 				co.add(DataSource.getConnection());
+				DBConnectController.clientsState(true);
 				// c = DataSource.getConnection();
 				shsView.printScreen("Size of the pool: " + DataSource.getSize());
 				shsView.printScreen("Number of connection asked: " + co.size());
