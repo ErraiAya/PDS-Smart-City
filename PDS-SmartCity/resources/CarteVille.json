@@ -1,11 +1,19 @@
 [
 	{
-		"libelle": "Rabat",
+		"libelle": "Nice",
 		"shape": "square",
-		"length": 700.0,
-		"width": 400.0,
+		"length": 300.0,
+		"width": 300.0,
 		"nb_points": 25,
-		"cost": 300.0
+		"cost": 2500.0
+	},
+	{
+		"libelle": "Luxembourg",
+		"shape": "ellipse",
+		"length": 400.0,
+		"width": 300.0,
+		"nb_points": 10,
+		"cost": 1000.0
 	}
 	
 ] 

@@ -37,7 +37,8 @@ public class InsertCard {
 		String myjsonstring = sb.toString();
 		JSONParser parser = new JSONParser();
 		JSONArray json = (JSONArray) parser.parse(myjsonstring);
-		JSONObject jsonObject = (JSONObject) json.get(0);
+		for(int i=0; i<json.size();i++) {
+		JSONObject jsonObject = (JSONObject) json.get(i);
 
 		JSONObject obj = new JSONObject();
 		obj.put("demandType", String.valueOf("INSERT_CARD"));
@@ -51,7 +52,7 @@ public class InsertCard {
 		JSONObject reponse = new JSONObject();
 		reponse = SocketClient.sendMessage(obj);
 		System.out.println(reponse);
-
+		}
 	}
 
 	public static void main(String[] args) throws IOException, ParseException {

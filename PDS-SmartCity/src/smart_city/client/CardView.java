@@ -305,7 +305,7 @@ public class CardView {
 		lblWidth.setBounds(56, 187, 61, 16);
 		panel.add(lblWidth);
 
-		JLabel lblCost = new JLabel("Cost");
+		JLabel lblCost = new JLabel("Budget");
 		lblCost.setFont(new Font("SansSerif", Font.BOLD, 13));
 		lblCost.setForeground(Color.WHITE);
 		lblCost.setBounds(56, 248, 61, 16);
@@ -529,7 +529,7 @@ public class CardView {
 				sWidth = Double.parseDouble(textFieldWidth.getText());
 				sLength = Double.parseDouble(textFieldLength.getText());
 				cost = Double.parseDouble(textFieldCost.getText());
-				point = (int) Math.round(cost / COST_STATION);
+				point = nbStation(cost, COST_STATION );
 				// Condition pour vÃ©rifier si les valeurs sont changÃ©es
 				if ((sWidth != oldWidth || sLength != oldHeigth || point != oldPoint || !s.equals(oldShape))) {
 					if (sWidth < 0 || sLength < 0 || cost < 0) {
@@ -555,6 +555,12 @@ public class CardView {
 			}
 
 		}
+	}
+	
+	public int nbStation(double budget, double cost) {
+		int nb = (int) Math.round(budget / cost);
+		      
+		return nb;
 	}
 
 	// GEN-LAST:event_btnNewButtonActionPerformed
