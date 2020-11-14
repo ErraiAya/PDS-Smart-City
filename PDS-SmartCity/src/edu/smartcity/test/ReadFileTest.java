@@ -1,4 +1,4 @@
-package smart_city.test;
+package edu.smartcity.test;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -10,7 +10,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import smart_city.client.SocketClient;
+import edu.smartcity.client.SocketClient;
 
 public class ReadFileTest {
 	public JSONArray readFileTest() throws IOException, ParseException {

@@ -1,4 +1,4 @@
-package smart_city.model;
+package edu.smartcity.model;
 
 public class CityCard {
 	private String libelle;		

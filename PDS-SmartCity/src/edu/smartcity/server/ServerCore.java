@@ -1,4 +1,4 @@
-package smart_city.server;
+package edu.smartcity.server;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -14,23 +14,24 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import org.json.JSONException;
-import smart_city.connection_pool.DataSource;
 
-public class DBConnectController extends Thread {
+import edu.smartcity.server.pool.ConnectionPool.DataSource;
+
+public class ServerCore implements Runnable {
 	
 	private DataSource userModel;
-	private TestPoolView shsView;
 	private Scanner sc = new Scanner(System.in);
 	private ServerSocket socketServeur;
 	private Socket socketClient;
 	private static int numberOfConnectedClients = 0;
 
-	public DBConnectController(TestPoolView v) throws SQLException, ClassNotFoundException {
+	public ServerCore() throws SQLException, ClassNotFoundException {
 		userModel = new DataSource();
-		shsView = v;
 	}
 
-	public void start()  {
+	@Override
+	public void run() {
+		// TODO Auto-generated method stub
 		String rep = "";
 		List<Connection> co = new ArrayList();
 		Connection c = null;
@@ -58,31 +59,23 @@ public class DBConnectController extends Thread {
 				
 				// a connection is assigned to the client
 				co.add(DataSource.getConnection());
-				DBConnectController.clientsState(true);
+				
 				// c = DataSource.getConnection();
-				shsView.printScreen("Size of the pool: " + DataSource.getSize());
-				shsView.printScreen("Number of connection asked: " + co.size());
+				System.out.println("Size of the pool: " + DataSource.getSize());
+				System.out.println("Number of connection asked: " + co.size());
 				c = co.get(0);
-				shsView.printScreen("Size of the pool: " + DataSource.getSize());
+				System.out.println("Size of the pool: " + DataSource.getSize());
 				System.out.println("Bonjour je vais traiter votre demande");
 				// instanciation of thread client (with a socket and a connection)
 				ThreadServer client = new ThreadServer(socketClient, c);
 				client.start();
+				DataSource.releaseConnection(c);
 			}catch (Exception ex) {
 				System.err.println(ex.getMessage());
 				// path of the exception
 				// ex.printStackTrace();
 			}
 		}
-
-	}
-
-	public static synchronized void clientsState(boolean isNewConnection) {
-		numberOfConnectedClients = (isNewConnection) ? (numberOfConnectedClients + 1) : (numberOfConnectedClients - 1);
-		System.out.println("====================================================");
-		System.out.println("=== Voici le nombre de clients connectés : " + numberOfConnectedClients);
-		System.out.println("====================================================");
-
 	}
 
 }

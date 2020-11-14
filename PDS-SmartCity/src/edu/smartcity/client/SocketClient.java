@@ -1,4 +1,4 @@
-package smart_city.client;
+package edu.smartcity.client;
 
 import java.io.BufferedReader;
 import java.io.IOException;

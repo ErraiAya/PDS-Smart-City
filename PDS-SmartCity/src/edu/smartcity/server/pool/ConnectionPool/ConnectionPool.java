@@ -1,13 +1,15 @@
-package smart_city.connection_pool;
+package edu.smartcity.server.pool.ConnectionPool;
 
 import java.sql.*;
 import java.util.*;
 
+import edu.smartcity.server.pool.DatabaseProperties.DataBaseConfiguration;
+
 //
-public class JDBCConnectionPool {
+public class ConnectionPool {
 	ArrayList<Connection> connections;
 	ArrayList<Connection> usedConnections;
-	GetDataConnection Data;
+	DataBaseConfiguration Data;
 	private int sizeMax = Integer.valueOf(System.getProperty("my.prop")); 
 	private int sizeMin = 1;
 	private String DRIVER_NAME;
@@ -15,10 +17,10 @@ public class JDBCConnectionPool {
 	private String login;
 	private String password;
 
-	public JDBCConnectionPool() throws SQLException {
+	public ConnectionPool() throws SQLException {
 		connections = new ArrayList<Connection>();
 		usedConnections = new ArrayList<Connection>();
-		Data = new GetDataConnection();
+		Data = new DataBaseConfiguration();
 		DRIVER_NAME = Data.getDriverName();
 		URL = Data.getDatabaseUrl();
 		login = Data.getLogin();
@@ -65,6 +67,10 @@ public class JDBCConnectionPool {
 		}
 		Connection toGet = connections.remove(connections.size() - 1);
 		usedConnections.add(toGet);
+
+		System.out.println("====================================================");
+		System.out.println("=== Voici le nombre de clients connectés : " + usedConnections.size());
+		System.out.println("====================================================");
 		return toGet;
 	}
 

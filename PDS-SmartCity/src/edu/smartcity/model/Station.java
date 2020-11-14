@@ -1,4 +1,4 @@
-package smart_city.model;
+package edu.smartcity.model;
 
 import java.util.Date;
 

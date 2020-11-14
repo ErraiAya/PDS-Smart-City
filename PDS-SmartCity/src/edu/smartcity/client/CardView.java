@@ -1,4 +1,4 @@
-package smart_city.client;
+package edu.smartcity.client;
 
 import java.awt.EventQueue;
 
@@ -48,6 +48,7 @@ import org.json.JSONException;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
 
+import edu.smartcity.commons.AccessServer;
 import net.proteanit.sql.DbUtils;
 
 import javax.swing.ScrollPaneConstants;
@@ -61,6 +62,7 @@ public class CardView {
 	private JTextField textFieldLength;
 	private JTextField textFieldWidth;
 	private JTextField textFieldCost;
+	private JTextField textFieldCostStation;
 	private JButton btnCancel;
 	private JButton btnSave;
 	private JComboBox comboBoxShape;
@@ -93,12 +95,12 @@ public class CardView {
 	private final double ENERGY_PRICE = 0.15; // (euro)
 	private final double AVERAGE_SPEED = 19.6; // (km/h)
 	private final double AVERAGE_CONSUMPTION = 120; // (kw/h)
-	private final double COST_STATION = 100; // (euro/station)
+	private double cost_station; // (euro/station)
 	private JTable table;
 	private SocketClient client = new SocketClient();
 	private DefaultTableModel dtm1;
 	SelectCardByName selectCardByName;
-	String header[] = new String[] { "Name", "Shape", "Length", "Width", "Nb Stations", "Costs" };
+	String header[] = new String[] { "Name", "Shape", "Length", "Width", "Nb Stations", "Budget" };
 
 	/**
 	 * Create the application.
@@ -147,7 +149,7 @@ public class CardView {
 					e1.printStackTrace();
 				}
 
-				System.out.println("Vous avez recupere vos donnÃ©es stockÃ©es en base");
+				System.out.println("Vous avez recupere vos données stockées en base");
 			}
 
 			@Override
@@ -238,24 +240,24 @@ public class CardView {
 		JPanel panel = new JPanel();
 		panel.setForeground(new Color(255, 255, 255));
 		panel.setBackground(new Color(0, 102, 153));
-		panel.setBounds(520, 58, 150, 309);
+		panel.setBounds(520, 58, 150, 308);
 		frame.getContentPane().add(panel);
 		panel.setLayout(null);
 
 		JLabel lblNewLabelName = new JLabel("Name");
 		lblNewLabelName.setFont(new Font("SansSerif", Font.BOLD, 13));
 		lblNewLabelName.setForeground(new Color(255, 255, 255));
-		lblNewLabelName.setBounds(56, 6, 61, 16);
+		lblNewLabelName.setBounds(56, 2, 61, 16);
 		panel.add(lblNewLabelName);
 
 		textFieldName = new JTextField();
-		textFieldName.setBounds(10, 28, 130, 26);
+		textFieldName.setBounds(10, 18, 130, 26);
 		panel.add(textFieldName);
 		textFieldName.setColumns(10);
 
 		textFieldLength = new JTextField();
 		textFieldLength.setColumns(10);
-		textFieldLength.setBounds(10, 147, 130, 26);
+		textFieldLength.setBounds(10, 114, 130, 26);
 		textFieldLength.getDocument().addDocumentListener(new DocumentListener() {
 
 			@Override
@@ -284,40 +286,51 @@ public class CardView {
 
 		textFieldWidth = new JTextField();
 		textFieldWidth.setColumns(10);
-		textFieldWidth.setBounds(10, 208, 130, 26);
+		textFieldWidth.setBounds(10, 162, 130, 26);
 		panel.add(textFieldWidth);
 
 		JLabel lblShape = new JLabel("Shape");
 		lblShape.setFont(new Font("SansSerif", Font.BOLD, 13));
 		lblShape.setForeground(Color.WHITE);
-		lblShape.setBounds(56, 65, 61, 16);
+		lblShape.setBounds(56, 48, 61, 16);
 		panel.add(lblShape);
 
 		JLabel lblLength = new JLabel("Length");
 		lblLength.setFont(new Font("SansSerif", Font.BOLD, 13));
 		lblLength.setForeground(Color.WHITE);
-		lblLength.setBounds(56, 125, 61, 16);
+		lblLength.setBounds(56, 94, 61, 16);
 		panel.add(lblLength);
 
 		JLabel lblWidth = new JLabel("Width ");
 		lblWidth.setFont(new Font("SansSerif", Font.BOLD, 13));
 		lblWidth.setForeground(Color.WHITE);
-		lblWidth.setBounds(56, 187, 61, 16);
+		lblWidth.setBounds(56, 144, 61, 16);
 		panel.add(lblWidth);
 
 		JLabel lblCost = new JLabel("Budget");
 		lblCost.setFont(new Font("SansSerif", Font.BOLD, 13));
 		lblCost.setForeground(Color.WHITE);
-		lblCost.setBounds(56, 248, 61, 16);
+		lblCost.setBounds(56, 190, 61, 16);
 		panel.add(lblCost);
+		
+		JLabel lblCostStation = new JLabel("Cost of a station");
+		lblCostStation.setFont(new Font("SansSerif", Font.BOLD, 13));
+		lblCostStation.setForeground(Color.WHITE);
+		lblCostStation.setBounds(17, 247, 117, 16);
+		panel.add(lblCostStation);
 
 		textFieldCost = new JTextField();
 		textFieldCost.setColumns(10);
-		textFieldCost.setBounds(10, 269, 130, 26);
+		textFieldCost.setBounds(10, 213, 130, 26);
 		panel.add(textFieldCost);
+		
+		textFieldCostStation = new JTextField();
+		textFieldCostStation.setColumns(10);
+		textFieldCostStation.setBounds(10, 270, 130, 26);
+		panel.add(textFieldCostStation);
 
 		comboBoxShape = new JComboBox();
-		comboBoxShape.setBounds(10, 85, 130, 28);
+		comboBoxShape.setBounds(10, 65, 130, 28);
 		comboBoxShape.setModel(new DefaultComboBoxModel(new String[] { "Ellipse", "Square", "Rectangle" }));
 		comboBoxShape.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -518,7 +531,7 @@ public class CardView {
 		s = (String) comboBoxShape.getItemAt(comboBoxShape.getSelectedIndex());
 		ville = textFieldName.getText();
 		if (textFieldLength.getText().length() == 0 || textFieldWidth.getText().length() == 0
-				|| textFieldCost.getText().length() == 0) {
+				|| textFieldCost.getText().length() == 0 || textFieldCostStation.getText().length() == 0) {
 			JOptionPane.showMessageDialog(null, "You must fill all the fields to continue",
 					"Warning : Empty parameter(s)", JOptionPane.WARNING_MESSAGE);
 			System.out.println("Vous devez remplir tous les champs de saisie pour continuer");
@@ -529,13 +542,14 @@ public class CardView {
 				sWidth = Double.parseDouble(textFieldWidth.getText());
 				sLength = Double.parseDouble(textFieldLength.getText());
 				cost = Double.parseDouble(textFieldCost.getText());
-				point = nbStation(cost, COST_STATION );
+				cost_station = Double.parseDouble(textFieldCostStation.getText());
+				point = nbStation(cost, cost_station );
 				// Condition pour vÃ©rifier si les valeurs sont changÃ©es
 				if ((sWidth != oldWidth || sLength != oldHeigth || point != oldPoint || !s.equals(oldShape))) {
-					if (sWidth < 0 || sLength < 0 || cost < 0) {
+					if (sWidth < 0 || sLength < 0 || cost < 0 || cost_station <= 0 ) {
 						JOptionPane.showMessageDialog(null, "You must enter positive numbers",
-								"Warning : negatif numbers", JOptionPane.WARNING_MESSAGE);
-						System.out.println("Vous devez saisir des valeurs positives pour procÃ©der Ã  la validation");
+								"Warning : negative numbers", JOptionPane.WARNING_MESSAGE);
+						System.out.println("Vous devez saisir des valeurs positives pour procéder à la validation");
 					} else {
 						firstRun = true;
 						prepare();
@@ -566,7 +580,7 @@ public class CardView {
 	// GEN-LAST:event_btnNewButtonActionPerformed
 
 	private void jBtnSaveActionPerformed(java.awt.event.ActionEvent evt) throws JSONException, IOException {// GEN-FIRST:event_jButton1ActionPerformed
-		int station = (int) Math.round(Double.parseDouble(textFieldCost.getText()) / COST_STATION);
+		int station = nbStation(Double.parseDouble(textFieldCost.getText()), Double.parseDouble(textFieldCostStation.getText()));
 		
 		JSONObject obj = new JSONObject();
 
@@ -719,7 +733,7 @@ public class CardView {
 		 * Font.PLAIN, 20)); g2d.drawString("Cost: " + (int) cost + "â‚¬", 0, -5);
 		 */
 		g2d.setFont(new Font("TimesRoman", Font.PLAIN, 20));
-		g2d.drawString("Cost of station : 100€", 0, -5);
+		//g2d.drawString("Cost of station : 100€", 0, -5);
 
 	}
 
@@ -730,6 +744,7 @@ public class CardView {
 		textFieldWidth.setEnabled(enabled);
 		textFieldCost.setEnabled(enabled);
 		textFieldSearch.setEnabled(enabled);
+		textFieldCostStation.setEnabled(enabled);
 		table.setEnabled(enabled);
 	}
 	

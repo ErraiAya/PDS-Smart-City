@@ -1,4 +1,4 @@
-package smart_city.test;
+package edu.smartcity.test;
 
 public class MainTest {
 

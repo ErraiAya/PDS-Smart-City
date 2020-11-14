@@ -1,4 +1,4 @@
-package smart_city.test;
+package edu.smartcity.test;
 
 import java.io.IOException;
 

@@ -1,9 +1,9 @@
-package smart_city.connection_pool;
+package edu.smartcity.server.pool.DatabaseProperties;
 
 import java.io.*;
 import java.util.Properties;
 
-public class GetDataConnection {
+public class DataBaseConfiguration {
 
 	private String DriverName;
 	private String DatabaseUrl;
@@ -12,7 +12,7 @@ public class GetDataConnection {
 	final Properties prop;
 	InputStream input = null;
 
-	public GetDataConnection() {
+	public DataBaseConfiguration() {
 		prop = new Properties();
 		try {
 

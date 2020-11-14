@@ -1,4 +1,4 @@
-package smart_city.server;
+package edu.smartcity.server;
 
 import java.net.Socket;
 import java.sql.Connection;
@@ -18,8 +18,8 @@ import org.json.simple.JSONValue;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import edu.smartcity.server.pool.ConnectionPool.DataSource;
 import net.proteanit.sql.DbUtils;
-import smart_city.connection_pool.DataSource;
 
 import java.io.*;
 import java.net.*;
@@ -81,7 +81,6 @@ public class ThreadServer extends Thread {
 			//System.out.println(e.getMessage());
 		}
 		
-		DBConnectController.clientsState(false);
 	}
 
 	// crud method allowing to according to customer's choice (select / insert/

@@ -1,13 +1,13 @@
-package smart_city.connection_pool;
+package edu.smartcity.server.pool.ConnectionPool;
 
 import java.sql.*;
 
 public class DataSource {
 
-	private static JDBCConnectionPool connectionPool;
+	private static ConnectionPool connectionPool;
 
 	public DataSource() throws  SQLException {
-		connectionPool = new JDBCConnectionPool();
+		connectionPool = new ConnectionPool();
 	}
 
 	public static Connection getConnection() throws SQLException {

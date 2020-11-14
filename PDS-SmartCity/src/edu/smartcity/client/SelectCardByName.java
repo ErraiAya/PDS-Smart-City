@@ -1,4 +1,4 @@
-package smart_city.client;
+package edu.smartcity.client;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -6,6 +6,8 @@ import java.util.Scanner;
 
 import org.json.JSONException;
 import org.json.simple.JSONObject;
+
+import edu.smartcity.commons.AccessServer;
 
 public class SelectCardByName {
 

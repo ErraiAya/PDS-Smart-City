@@ -1,4 +1,4 @@
-package smart_city.client;
+package edu.smartcity.commons;
 
 import java.io.IOException;
 import java.io.InputStream;
