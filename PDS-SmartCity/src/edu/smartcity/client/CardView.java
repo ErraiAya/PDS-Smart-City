@@ -258,7 +258,7 @@ public class CardView {
 		textFieldLength = new JTextField();
 		textFieldLength.setColumns(10);
 		textFieldLength.setBounds(10, 114, 130, 26);
-		textFieldLength.getDocument().addDocumentListener(new DocumentListener() {
+/*		textFieldLength.getDocument().addDocumentListener(new DocumentListener() {
 
 			@Override
 			public void insertUpdate(DocumentEvent e) {
@@ -282,6 +282,7 @@ public class CardView {
 				}
 			}
 		});
+*/
 		panel.add(textFieldLength);
 
 		textFieldWidth = new JTextField();
@@ -331,7 +332,7 @@ public class CardView {
 
 		comboBoxShape = new JComboBox();
 		comboBoxShape.setBounds(10, 65, 130, 28);
-		comboBoxShape.setModel(new DefaultComboBoxModel(new String[] { "Ellipse", "Square", "Rectangle" }));
+		comboBoxShape.setModel(new DefaultComboBoxModel(new String[] { "Ellipse", "Rectangle" }));
 		comboBoxShape.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				comboBoxShapeActionPerformed(e);
@@ -482,12 +483,12 @@ public class CardView {
 
 	private void comboBoxShapeActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_comboBoxFormeActionPerformed
 		s = (String) comboBoxShape.getItemAt(comboBoxShape.getSelectedIndex());
-		if (s.equals("Square")) {
+		/*if (s.equals("Square")) {
 			textFieldWidth.setEnabled(false);
 			textFieldWidth.setText(textFieldLength.getText());
-		} else {
+		} else {*/
 			textFieldWidth.setEnabled(true);
-		}
+		
 	}// GEN-LAST:event_comboBoxFormeActionPerformed
 
 	private void tableRechMouseClicked(java.awt.event.MouseEvent evt) {// GEN-FIRST:event_tableRechMouseClicked
@@ -632,12 +633,14 @@ public class CardView {
 	// draw shape
 	public void draw(int width, int length) {
 
-		if (s.equals("Square") || s.equals("square")) {
+/*		if (s.equals("Square") || s.equals("square")) {
 
 			graphics.setColor(Color.BLUE);
 			graphics.drawRect(x, y, width, length);
 
-		} else if (s.equals("Rectangle") || s.equals("rectangle")) {
+		} else 
+		*/
+		if (s.equals("Rectangle") || s.equals("rectangle")) {
 
 			graphics.setColor(Color.RED);
 			graphics.drawRect(x, y, width, length);
