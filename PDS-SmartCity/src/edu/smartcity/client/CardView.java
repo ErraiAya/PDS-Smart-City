@@ -537,8 +537,10 @@ public class CardView {
 					"Warning : Empty parameter(s)", JOptionPane.WARNING_MESSAGE);
 			System.out.println("Vous devez remplir tous les champs de saisie pour continuer");
 
+		} else if (Double.parseDouble(textFieldWidth.getText()) >= Double.parseDouble(textFieldLength.getText())) {
+			JOptionPane.showMessageDialog(null, "The length must be greater than the width ",
+					"Warning : Empty parameter(s)", JOptionPane.WARNING_MESSAGE);
 		} else {
-
 			try {
 				sWidth = Double.parseDouble(textFieldWidth.getText());
 				sLength = Double.parseDouble(textFieldLength.getText());

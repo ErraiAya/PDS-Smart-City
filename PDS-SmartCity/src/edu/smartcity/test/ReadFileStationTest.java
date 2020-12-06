@@ -12,10 +12,10 @@ import org.json.simple.parser.ParseException;
 
 import edu.smartcity.client.SocketClient;
 
-public class ReadFileTest {
+public class ReadFileStationTest {
 	public JSONArray readFileTest() throws IOException, ParseException {
 		StringBuffer sb = new StringBuffer();
-		InputStream inputStream = getClass().getClassLoader().getResourceAsStream("Test.json");
+		InputStream inputStream = getClass().getClassLoader().getResourceAsStream("StationTest.json");
 		BufferedReader bufferedReader2 = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
 		try {
 			String temp;

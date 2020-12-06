@@ -1,11 +1,10 @@
 package edu.smartcity.test;
 
-public class MainTest {
-
+public class MainDimensionTest {
+	
 	public static void main(String[] args) {
-		ManageTest manageTest = new ManageTest();
+		ManageDimensionTest manageTest = new ManageDimensionTest();
 		manageTest.start();
 
 	}
-
 }
